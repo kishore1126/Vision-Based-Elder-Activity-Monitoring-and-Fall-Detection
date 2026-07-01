@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elder Guard AI | Intelligent Fall Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #0f172a;
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col">
+    <nav class="glass-nav sticky top-0 z-50 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 group cursor-pointer">
+                <div class="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.4)] group-hover:scale-110 transition-transform">
+                    <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <span class="text-xl font-extrabold tracking-tighter text-white">ELDER<span class="text-blue-500">GUARD</span></span>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                {% if current_user.is_authenticated %}
+                    <div class="flex items-center space-x-3 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-700">
+                        <div class="h-6 w-6 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full"></div>
+                        <span class="text-sm font-semibold text-gray-300">{{ current_user.name }}</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="text-sm font-bold text-red-400 hover:text-red-300 transition-colors">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Login</a>
+                    <a href="{{ url_for('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-full transition-all shadow-lg shadow-blue-900/20">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto p-6">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="max-w-4xl mx-auto mb-6">
+                    {% for message in messages %}
+                        <div class="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl flex items-center space-x-3 shadow-xl backdrop-blur-sm">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-gray-800 py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm text-gray-500 font-medium tracking-wide">&copy; 2026 ELDER GUARD AI. ADVANCED POSE ESTIMATION SYSTEM.</p>
+        </div>
+    </footer>
+</body>
+</html>

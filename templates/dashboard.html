@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Main Feed Section -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+            <div class="bg-gray-700/50 px-6 py-4 flex justify-between items-center border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="h-3 w-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <h2 class="text-xl font-bold text-gray-100 tracking-tight">AI Surveillance Feed</h2>
+                </div>
+                <div id="clock" class="text-lg font-mono text-blue-400 bg-gray-900 px-4 py-1.5 rounded-lg border border-gray-700 shadow-inner"></div>
+            </div>
+            <div class="relative bg-black group">
+                <img src="{{ url_for('video_feed') }}" alt="Live Feed" class="w-full aspect-video object-contain"
+                    onerror="this.src='https://via.placeholder.com/640x480?text=Camera+Feed+Offline';">
+                
+                <!-- Overlay Data -->
+                <div class="absolute top-4 left-4 space-y-2">
+                    <div class="bg-gray-900/80 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700 flex items-center space-x-2">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">FPS:</span>
+                        <span id="realtime-fps" class="text-xs font-mono text-green-400">0.0</span>
+                    </div>
+                    <div class="bg-gray-900/80 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700 flex items-center space-x-2">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Device:</span>
+                        <span id="device-name" class="text-xs font-mono text-blue-400">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-4 right-4">
+                    <div id="live-indicator" class="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-tighter animate-pulse">
+                        LIVE
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Data Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-lg transition-all hover:border-blue-500/50">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Current State</p>
+                <div id="realtime-state" class="text-2xl font-black text-gray-100 italic">Detecting...</div>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-lg transition-all hover:border-blue-500/50">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Torso Angle</p>
+                <div id="realtime-angle" class="text-2xl font-mono font-black text-blue-400">0.0°</div>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-lg transition-all hover:border-blue-500/50">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">System Health</p>
+                <div class="flex items-center space-x-2 mt-1">
+                    <span class="h-2 w-2 bg-green-500 rounded-full"></span>
+                    <span class="text-sm font-bold text-green-500 uppercase tracking-wide">Optimal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Section -->
+    <div class="lg:col-span-1 space-y-6">
+        <!-- Emergency Alerts -->
+        <div id="alert-banner" class="hidden animate-bounce">
+            <div class="bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-center space-x-3 border-2 border-red-400">
+                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div>
+                    <p class="text-xs font-black uppercase tracking-tighter">Emergency</p>
+                    <p class="font-bold leading-tight">Fall Detected!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity History -->
+        <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 flex flex-col h-[400px]">
+            <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-gray-300 uppercase tracking-widest">Recent Logs</h3>
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20">Auto-update</span>
+            </div>
+            <div class="flex-grow overflow-y-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <tbody id="history-body" class="text-xs">
+                        <!-- History items injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Detection Legend</h3>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                    <span class="text-xs text-gray-300">Standing (Active)</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>
+                    <span class="text-xs text-gray-300">Sitting (Resting)</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></div>
+                    <span class="text-xs text-gray-300">Lying (Moving)</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
+                    <span class="text-xs text-gray-300">Sleeping (Still)</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.6)]"></div>
+                    <span class="text-xs text-gray-300">Fall Detected (Emergency)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+</style>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour12: false});
+    }
+
+    function checkStatus() {
+        fetch('/status')
+            .then(response => response.json())
+            .then(data => {
+                const stateEl = document.getElementById('realtime-state');
+                const angleEl = document.getElementById('realtime-angle');
+                const alertBanner = document.getElementById('alert-banner');
+                const deviceEl = document.getElementById('device-name');
+                const fpsEl = document.getElementById('realtime-fps');
+                
+                stateEl.textContent = data.details.state;
+                angleEl.textContent = data.details.angle.toFixed(1) + '°';
+                fpsEl.textContent = data.details.fps.toFixed(1);
+                deviceEl.textContent = data.device;
+                
+                if (data.device.includes('CPU')) {
+                    deviceEl.className = "text-xs font-mono text-red-500 font-bold animate-pulse";
+                } else {
+                    deviceEl.className = "text-xs font-mono text-blue-400";
+                }
+                
+                // Dynamic State Coloring
+                const state = data.details.state;
+                const isFall = data.details.is_fall;
+                
+                let textColorClass = "text-gray-100";
+                if (isFall || state.includes("Fall")) {
+                    textColorClass = "text-red-500 animate-pulse";
+                    alertBanner.classList.remove('hidden');
+                } else {
+                    alertBanner.classList.add('hidden');
+                    if (state === "Standing") textColorClass = "text-green-500";
+                    else if (state === "Sitting") textColorClass = "text-orange-500";
+                    else if (state === "Lying") textColorClass = "text-cyan-400";
+                    else if (state === "Sleeping") textColorClass = "text-yellow-400";
+                }
+                
+                stateEl.className = `text-2xl font-black italic ${textColorClass}`;
+            })
+            .catch(err => console.error(err));
+    }
+
+    function updateHistory() {
+        fetch('/history')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('history-body');
+                if (data.logs.length === 0) {
+                    tbody.innerHTML = '<tr><td class="px-6 py-8 text-center text-gray-500 italic">No incidents recorded</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.logs.map(log => `
+                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
+                        <td class="px-6 py-3 font-mono text-gray-400">${log.timestamp.split(' ')[1]}</td>
+                        <td class="px-6 py-3 font-bold text-red-400">${log.status}</td>
+                    </tr>
+                `).join('');
+            });
+    }
+
+    setInterval(updateClock, 1000);
+    setInterval(checkStatus, 500); 
+    setInterval(updateHistory, 5000);
+    updateClock();
+    checkStatus();
+    updateHistory();
+</script>
+{% endblock %}

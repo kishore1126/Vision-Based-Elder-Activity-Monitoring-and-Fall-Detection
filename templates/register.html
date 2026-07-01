@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-12">
+    <div class="bg-gray-800 p-10 rounded-3xl shadow-2xl border border-gray-700 backdrop-blur-md">
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-black text-white tracking-tighter mb-2">Initialize Account</h2>
+            <p class="text-sm text-gray-400 font-medium">Set up your intelligent fall detection system</p>
+        </div>
+        
+        <form method="POST" action="/register" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1" for="name">Operator Name</label>
+                <input
+                    class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-600"
+                    type="text" name="name" placeholder="John Doe" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1" for="email">Alert Email</label>
+                <input
+                    class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-600"
+                    type="email" name="email" placeholder="alert@example.com" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1" for="password">Security Password</label>
+                <input
+                    class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-600"
+                    type="password" name="password" placeholder="Min. 8 characters" required>
+            </div>
+            
+            <button
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-900/30 active:scale-[0.98]"
+                type="submit">
+                Generate AI Account
+            </button>
+        </form>
+        
+        <div class="mt-8 pt-6 border-t border-gray-700/50 text-center">
+            <p class="text-sm text-gray-400 font-medium">
+                Already registered? <a href="{{ url_for('login') }}" class="text-blue-500 hover:text-blue-400 font-bold transition-colors">Login Securely</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

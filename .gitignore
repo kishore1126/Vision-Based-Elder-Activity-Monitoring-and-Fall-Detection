@@ -1,0 +1,38 @@
+# Python environment
+venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+*.whl
+*.tar.gz
+*.zip
+
+# PyTorch and model weights
+*.pt
+*.pth
+
+# Environment variables and secrets
+.env
+
+# SQLite database and local runtime files
+instance/db.sqlite
+instance/*.sqlite
+
+# Editor directories and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

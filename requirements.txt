@@ -1,0 +1,15 @@
+flask
+flask-sqlalchemy
+flask-login
+opencv-python
+numpy
+ultralytics
+torch
+torchvision
+torchaudio
+pyttsx3
+python-dotenv
+requests
+pywin32
+# For GPU (CUDA 12.1), use the setup_gpu.bat script or run:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
